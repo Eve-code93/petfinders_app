@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Adoption SPA</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Pet Adoption Center</h1>
+        <input type="text" id="search" placeholder="Search for pets...">
+    </header>
+
+    <main>
+        <section id="filters">
+            <label for="pet-type">Filter by Type:</label>
+            <select id="pet-type">
+                <option value="all">All</option>
+                <option value="dog">Dogs</option>
+                <option value="cat">Cats</option>
+                <option value="bird">Birds</option>
+            </select>
+        </section>
+
+        <section id="pet-list">
+            <!-- Pet cards will be added dynamically here -->
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
