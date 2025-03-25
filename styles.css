@@ -1,0 +1,249 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+
+body {
+    background-color: bisque;
+    color: #333;
+}
+
+header {
+    background-color: #efca5c;
+    padding: 15px 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+
+.welcome {
+    font-size: 20px;
+    font-weight: bold;
+    color: #150901;
+    margin-bottom: 10px;
+}
+
+
+.nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 20px;
+}
+
+nav {
+    flex: 2; 
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-around; 
+    width: 100%;
+}
+
+nav ul li {
+    display: inline;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-size: 18px;
+    padding: 10px 20px; 
+    transition: color 0.3s;
+}
+
+nav ul li a:hover {
+    color: #ff6600;
+}
+
+.search-bar {
+    flex: 1; 
+    text-align: right;
+}
+
+.search-bar input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 50px;
+}
+
+.hero-text {
+    max-width: 40%;
+}
+
+.hero-text h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+.hero-text p {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+.find-btn {
+    background-color: #ff5722;
+    color: white;
+    padding: 10px 20px;
+    font-size: 1.2em;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.slideshow-container {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    overflow: hidden;
+}
+
+.slide {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    border-radius: 10px;
+}
+
+.active {
+    opacity: 1;
+}
+
+.pet-sections {
+    display: flex;
+    justify-content: space-between;
+    padding: 40px;
+    gap: 20px;
+}
+
+.pet-category {
+    width: 30%;
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.pet-list {
+    margin-top: 10px;
+    min-height: 200px; /* Placeholder space for API data */
+}
+
+.latest-arrivals {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #fff3e6;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.latest-pets {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.pet-card {
+    width: 250px;
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.pet-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.pet-card h3 {
+    margin: 10px 0;
+    font-size: 18px;
+}
+
+.pet-card p {
+    font-size: 14px;
+    color: #666;
+}
+
+.subscription {
+    margin-top: 40px;
+    padding: 30px;
+    background-color: #ffcc99;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.subscription h2 {
+    font-size: 24px;
+    color: #333;
+}
+
+.subscription p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.subscription form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.subscription input {
+    padding: 10px;
+    width: 250px;
+    border: 2px solid #ff7f50;
+    border-radius: 5px;
+}
+
+.subscription button {
+    padding: 10px 15px;
+    background-color: #ff7f50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+.subscription button:hover {
+    background-color: #e67340;
+}
+
+.hidden {
+    display: none;
+}
+
+#subscription-message {
+    margin-top: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    color: green;
+}
