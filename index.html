@@ -18,7 +18,13 @@
                 </ul>
             </nav>
             <div class="search-bar">
-                <input type="text" placeholder="Search...">
+                 <select id="search-category">
+                    <option value="">All</option>
+                    <option value="dog">Dogs</option>
+                    <option value="cat">Cats</option>
+                    <option value="other">Other Pets</option>
+                </select>
+                <input type="text" id="search-input" placeholder="Search...">
             </div>
         </div>
     </header>
@@ -30,20 +36,47 @@
             <button class="find-btn">Find Now</button>
         </div>
         <div class="hero-image">
+            <div class="filter-form hidden" id="filter-form">
+                <h2>Filter Your Search</h2>
+                <form id="pet-filter-form">
+                    <label for="type">Type:</label>
+                    <select id="type">
+                        <option value="">Any</option>
+                        <option value="dog">Dog</option>
+                        <option value="cat">Cat</option>
+                        <option value="other">Other</option>
+                    </select>
+            
+                    <label for="age">Age:</label>
+                    <select id="age">
+                        <option value="">Any</option>
+                        <option value="baby">Baby</option>
+                        <option value="young">Young</option>
+                        <option value="adult">Adult</option>
+                        <option value="senior">Senior</option>
+                    </select>
+            
+                    <label for="size">Size:</label>
+                    <select id="size">
+                        <option value="">Any</option>
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                    </select>
+            
+                    <button type="submit">Search</button>  
+                    <button id="filter-button" type="button">Apply Filters</button> 
+                </form>
+            </div>
+            
             <div class="slideshow-container">
-                <img src="images/alvan-nee-eoqnr8ikwFE-unsplash.jpg" class="slide active">
-                <img src="images/alec-favale-Ivzo69e18nk-unsplash.jpg" class="slide">
-                <img src="images/alvan-nee-8g0D8ZfFXyA-unsplash.jpg" class="slide">
-                <img src="images/flouffy-g2FtlFrc164-unsplash.jpg" class="slide">
-                <img src="images/karsten-winegeart-Qb7D1xw28Co-unsplash (1).jpg" class="slide">
-                <img src="images/jay-wennington-CdK2eYhWfQ0-unsplash.jpg" class="slide">
-                <img src="images/tran-mau-tri-tam--81lVsfM4gQ-unsplash.jpg" class="slide">
-                <img src="images/anoir-chafik-2_3c4dIFYFU-unsplash.jpg" class="slide">
-                <img src="images/kate-stone-matheson-uy5t-CJuIK4-unsplash.jpg" class="slide">
+                <div id="slides"></div> <!-- Images will be added dynamically -->
                 <button class="prev" onclick="changeSlide(-1)">&#10094;</button>
                 <button class="next" onclick="changeSlide(1)">&#10095;</button>
             </div>
+        </div> 
     </section>
+
     <section class="pet-sections">
         <div class="pet-category" id="cats-section">
             <h2>Cats Available for Adoption</h2>
@@ -58,12 +91,14 @@
             <div class="pet-list" id="others-list"></div>
         </div>
     </section>
+
     <section class="latest-arrivals">
         <h2>Latest Arrivals</h2>
         <div class="latest-pets" id="latest-pets-list">
             <!-- Pets will be dynamically added here -->
         </div>
     </section>
+
     <section class="subscription">
         <h2>Love our pets? ❤️</h2>
         <p>Join our yearly subscription and save <strong>40%</strong>! No strings attached, simple one-click cancellation.</p>
@@ -76,7 +111,6 @@
         <p id="subscription-message" class="hidden"></p>
     </section>
 
-    
     <footer>
         <div class="footer-container">
             <ul>
