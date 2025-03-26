@@ -33,44 +33,50 @@
         <div class="hero-text">
             <h1>Find your forever friend</h1>
             <p>Browse our selection of adorable pets looking for a loving home.</p>
-            <button class="find-btn">Find Now</button>
+            <button class="find-btn" id="find-now-button">Find Now</button>
         </div>
-        <div class="hero-image">
-            <div class="filter-form hidden" id="filter-form">
-                <h2>Filter Your Search</h2>
-                <form id="pet-filter-form">
-                    <label for="type">Type:</label>
-                    <select id="type">
-                        <option value="">Any</option>
-                        <option value="dog">Dog</option>
-                        <option value="cat">Cat</option>
-                        <option value="other">Other</option>
-                    </select>
-            
-                    <label for="age">Age:</label>
-                    <select id="age">
-                        <option value="">Any</option>
-                        <option value="baby">Baby</option>
-                        <option value="young">Young</option>
-                        <option value="adult">Adult</option>
-                        <option value="senior">Senior</option>
-                    </select>
-            
-                    <label for="size">Size:</label>
-                    <select id="size">
-                        <option value="">Any</option>
-                        <option value="small">Small</option>
-                        <option value="medium">Medium</option>
-                        <option value="large">Large</option>
-                    </select>
-            
-                    <button type="submit">Search</button>  
-                    <button id="filter-button" type="button">Apply Filters</button> 
-                </form>
-            </div>
-            
+        <form id="pet-filter-form">
+            <label for="type">Type:</label>
+            <select id="type">
+                <option value="">Any</option>
+                <option value="dog">Dog</option>
+                <option value="cat">Cat</option>
+                <option value="other">Other</option>
+            </select>
+        
+            <label for="age">Age:</label>
+            <select id="age">
+                <option value="">Any</option>
+                <option value="baby">Baby</option>
+                <option value="young">Young</option>
+                <option value="adult">Adult</option>
+                <option value="senior">Senior</option>
+            </select>
+        
+            <label for="size">Size:</label>
+            <select id="size">
+                <option value="">Any</option>
+                <option value="small">Small</option>
+                <option value="medium">Medium</option>
+                <option value="large">Large</option>
+            </select>
+        
+            <button type="submit">Search</button>  
+        </form>
+        
+        <section id="pet-list"></section>
             <div class="slideshow-container">
-                <div id="slides"></div> 
+                <div class="slides">
+                    <img src="images/alvan-nee-8g0D8ZfFXyA-unsplash.jpg" alt="A happy dog sitting on the grass" class="slide">
+                    <img src="images/tran-mau-tri-tam--81lVsfM4gQ-unsplash.jpg" alt="A brown dog looking at the camera" class="slide">
+                    <img src="images/anoir-chafik-2_3c4dIFYFU-unsplash.jpg" alt="A cute puppy resting on a pillow" class="slide">
+                    <img src="images/dog.jpg" alt="Golden retriever running on a beach" class="slide">
+                    <img src="images/jay-wennington-CdK2eYhWfQ0-unsplash.jpg" alt="A small dog with a playful expression" class="slide">
+                    <img src="images/karsten-winegeart-Qb7D1xw28Co-unsplash.jpg" alt="A fluffy dog lying on the couch" class="slide">
+                    <img src="images/karsten-winegeart-oU6KZTXhuvk-unsplash.jpg" alt="A dog enjoying the sunshine" class="slide">
+                    <img src="images/alec-favale-Ivzo69e18nk-unsplash.jpg" alt="A puppy with a curious look" class="slide">
+                    <img src="images/kate-stone-matheson-uy5t-CJuIK4-unsplash.jpg" alt="A dog resting peacefully" class="slide">
+                </div>
                 <button class="prev" onclick="changeSlide(-1)">&#10094;</button>
                 <button class="next" onclick="changeSlide(1)">&#10095;</button>
             </div>
@@ -94,14 +100,12 @@
 
     <section class="latest-arrivals">
         <h2>Latest Arrivals</h2>
-        <div class="latest-pets" id="latest-pets-list">
-            
-        </div>
+        <div class="latest-pets" id="latest-pets-list"></div>
     </section>
 
     <section class="subscription">
         <h2>Love our pets? ❤️</h2>
-        <p>Join our yearly subscription and save <strong>40%</strong>! No strings attached, simple one-click cancellation.</p>
+        <p>Join our Mail List to Keep updated on New Arrivals<strong>40%</strong>! No strings attached, simple one-click cancellation.</p>
         
         <form id="subscription-form">
             <input type="email" id="email" placeholder="Enter your email" required>
