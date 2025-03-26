@@ -51,16 +51,15 @@ async function getValidToken() {
     return await getAccessToken();
 }
 
-// Fetch pets when the page loads
 document.addEventListener("DOMContentLoaded", async () => {
     await getValidToken();
     fetchPets();
 });
 
-// Function to fetch pets from Petfinder API
+
 async function fetchPets() {
     try {
-        const token = await getValidToken(); // Get valid token (will auto-refresh if expired)
+        const token = await getValidToken(); 
         const response = await fetch("https://api.petfinder.com/v2/animals", {
             headers: { Authorization: `Bearer ${token}` }
         });
@@ -73,13 +72,13 @@ async function fetchPets() {
             throw new Error("Invalid API response: Expected an array of animals");
         }
 
-        categorizePets(data.animals); // Ensure it's an array before categorizing
+        categorizePets(data.animals); 
     } catch (error) {
         console.error("❌ Error fetching pets:", error);
     }
 }
 
-// Function to categorize and display pets
+
 function categorizePets(pets) {
     if (!Array.isArray(pets)) {
         console.error("❌ Error: pets is not an array.");
@@ -100,14 +99,13 @@ function categorizePets(pets) {
         else otherPets.push(pet);
     });
 
-    // ✅ Display pets in respective categories
+    
     displayPets("latest-pets-list", newArrivals);
     displayPets("dogs-list", dogs);
     displayPets("cats-list", cats);
     displayPets("others-list", otherPets);
 }
 
-// Function to display pets in respective sections
 function displayPets(containerId, pets) {
     const container = document.getElementById(containerId);
     if (!container) {
@@ -115,13 +113,13 @@ function displayPets(containerId, pets) {
         return;
     }
 
-    container.innerHTML = ""; // Clear previous content
+    container.innerHTML = ""; 
 
     pets.forEach(pet => {
         const petCard = document.createElement("div");
         petCard.classList.add("pet-card");
 
-        // Fixing image loading with fallback
+      
         const imageUrl = pet.photos.length > 0 ? pet.photos[0].medium : "default-image.jpg";
 
         petCard.innerHTML = `
