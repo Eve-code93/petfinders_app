@@ -49,6 +49,40 @@ async function getValidToken() {
     return await getAccessToken();
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+    const themeToggle = document.getElementById("theme-toggle");
+    const themeIcon = document.getElementById("theme-icon");
+    const body = document.body;
+
+    // Load saved theme from localStorage
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark-mode") {
+        body.classList.add("dark-mode");
+        themeIcon.textContent = "☀️"; // Sun icon for light mode
+        themeToggle.textContent = " Light Mode";
+    } else {
+        themeIcon.textContent = "🌙"; // Moon icon for dark mode
+        themeToggle.textContent = " Dark Mode";
+    }
+
+    // Toggle Theme
+    themeToggle.addEventListener("click", function () {
+        if (body.classList.contains("dark-mode")) {
+            body.classList.remove("dark-mode");
+            themeIcon.textContent = "🌙"; // Switch to moon icon
+            themeToggle.textContent = " Dark Mode";
+            localStorage.setItem("theme", "light-mode");
+        } else {
+            body.classList.add("dark-mode");
+            themeIcon.textContent = "☀️"; // Switch to sun icon
+            themeToggle.textContent = " Light Mode";
+            localStorage.setItem("theme", "dark-mode");
+        }
+    });
+});
+
+
+
 // Fetch pets with filters
 async function fetchPets(type = "", age = "", size = "", page = 1) {
     try {

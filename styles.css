@@ -62,18 +62,46 @@ nav ul li a {
 nav ul li a:hover {
     color: #ff6600;
 }
-
-/* Search Bar */
-.search-bar {
-    flex: 1; 
-    text-align: right;
+/* Default light mode */
+body {
+    background-color: #ffffff;
+    color: #333;
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
-.search-bar input {
-    padding: 8px;
-    border: 1px solid #ccc;
+/* Default Light Mode */
+body {
+    background-color: #ffffff;
+    color: #333;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background-color: #1a1a1a;
+    color: #f5f5f5;
+}
+
+/* Style the Toggle Button */
+#theme-toggle {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 10px 15px;
     border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.3s, color 0.3s;
 }
+
+body.dark-mode #theme-toggle {
+    background-color: white;
+    color: black;
+}
+
 
 /* Hero Section */
 .hero {
