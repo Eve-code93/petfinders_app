@@ -1,0 +1,118 @@
+# Pet Adoption Finder
+
+## 📌 Project Overview
+Pet Adoption Finder is a **JavaScript Single Page Application (SPA)** that helps users find adoptable pets by fetching real-time data from the **Petfinder API**. Users can filter pets by type, age, and size, view categorized listings, and save their favorite pets.
+
+## 🛠️ Features
+- 🔍 **Search & Filter:** Users can filter pets by **type (dog, cat, other), age, and size**.
+- 📦 **Categorization:** Pets are categorized into **Dogs, Cats, Other Pets, and Latest Arrivals**.
+- ❤️ **Favorite Pets:** Users can mark pets as favorites, stored in `localStorage`.
+- 🚀 **Optimized API Requests:** Uses **access tokens with caching** to reduce unnecessary API calls.
+- 📷 **Image Filtering:** Pets without images are excluded to improve the user experience.
+- ⚡ **Dynamic UI Updates:** Uses JavaScript to dynamically render pet listings based on API responses.
+
+---
+
+## 🏗️ Project Setup
+
+### **1️⃣ Prerequisites**
+Ensure you have:
+- A **modern web browser** (Chrome, Firefox, Edge, etc.).
+- A **text editor** (VSCode, Sublime, etc.).
+- **Basic knowledge of HTML, CSS, and JavaScript**.
+
+### **2️⃣ Clone the Repository**
+```sh
+git clone https://github.com/Eve-code93/pet-adoption-finder.git
+cd pet-adoption-finder
+```
+
+### **3️⃣ API Key Setup**
+This project uses the **Petfinder API**, so you'll need an API key:
+1. Sign up at [Petfinder Developers](https://www.petfinder.com/developers/).
+2. Get your **Client ID** and **Client Secret**.
+3. Replace the placeholders in `script.js`:
+   ```js
+   const CLIENT_ID = "YOUR_CLIENT_ID";
+   const CLIENT_SECRET = "YOUR_CLIENT_SECRET";
+   ```
+
+### **4️⃣ Run the Project**
+Simply open `index.html` in your browser:
+```sh
+open index.html
+```
+Or use **Live Server** in VSCode for auto-reloading:
+```sh
+npx live-server
+```
+
+---
+
+## 📖 Usage Guide
+
+### **🔹 Searching for Pets**
+1. Choose **Type, Age, and Size** from the dropdowns.
+2. Click the **"Find Now"** button.
+3. View the filtered pet listings below.
+
+### **🔹 Saving Favorites**
+1. Click the ❤️ button next to a pet.
+2. The pet ID is stored in `localStorage`.
+3. Reloading the page keeps favorites saved.
+
+### **🔹 Viewing Categories**
+Pets are displayed under:
+- **Dogs** 🐶
+- **Cats** 🐱
+- **Other Pets** 🐾
+- **Latest Arrivals** 🆕 (Pets added within the last 7 days)
+
+---
+
+## 📜 Code Structure
+
+```
+📂 pet-adoption-finder
+ ├── 📄 index.html       # Main HTML structure
+ ├── 📄 styles.css       # CSS styling
+ ├── 📄 script.js        # Main JavaScript logic
+ ├── 📄 README.md        # Project documentation
+```
+
+- **`index.html`** → Contains the UI structure.
+- **`styles.css`** → Handles layout and design.
+- **`script.js`** → Fetches API data and updates the UI dynamically.
+
+---
+
+## ⚠️ Troubleshooting
+
+### **1️⃣ "Find Now" button is not working**
+✅ Ensure `id="find-now-btn"` exists in `index.html`.
+✅ Check browser console (`F12` → Console) for errors.
+✅ Verify your **API credentials** are correct.
+
+### **2️⃣ Pets are not displaying correctly**
+✅ Check API token in `localStorage` (DevTools → Application → Storage).
+✅ Refresh the page to request a new token.
+✅ Confirm the API returns results (log `console.log(data.animals);`).
+
+### **3️⃣ "Favorite" button not saving pets**
+✅ Ensure `localStorage` is enabled in your browser.
+✅ Clear `localStorage` (`localStorage.clear();` in Console) and retry.
+
+---
+
+## 📌 Future Improvements
+- 🏠 Add a "Favorites" page to view saved pets.
+- 📍 Implement location-based search.
+- 🔄 Add pagination to load more results.
+
+---
+
+## 👩‍💻 Author
+**Eve-code93** (GitHub: [Eve-code93](https://github.com/Eve-code93))
+
+🚀 Happy coding! 🐾
+
