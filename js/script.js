@@ -182,33 +182,39 @@ function displayPets(containerId, pets, itemsToShow = 5) {
 }
 
 
-// Image slider functionality (Fixed Flashing Issue)
-document.addEventListener("DOMContentLoaded", function () {
-    let slideIndex = 0;
-    const slides = document.querySelectorAll(".slide");
+document.addEventListener("DOMContentLoaded", () => {
+    const findNowBtn = document.querySelector("#find-now-btn");
+    const filterForm = document.querySelector("#filter-form");
+    const closeFilterBtn = document.querySelector("#close-filter");
 
-    if (slides.length === 0) {
-        console.error("No slides found! Check your image paths.");
-        return;
-    }
+    // Open filter form
+    findNowBtn.addEventListener("click", () => {
+        filterForm.style.display = "flex"; // Show the form
+    });
 
-    function showSlide(index) {
-        slides.forEach((slide, i) => {
-            slide.style.opacity = i === index ? "1" : "0";
-            slide.style.transition = "opacity 0.5s ease-in-out";
-        });
-    }
+    // Close filter form
+    closeFilterBtn.addEventListener("click", () => {
+        filterForm.style.display = "none"; // Hide the form
+    });
 
-    function changeSlide(direction) {
-        slideIndex = (slideIndex + direction + slides.length) % slides.length;
-        showSlide(slideIndex);
-    }
+    // Handle form submission
+    document.querySelector("#pet-filter-form").addEventListener("submit", (event) => {
+        event.preventDefault(); // Prevent actual submission for now
 
-    document.querySelector(".prev")?.addEventListener("click", () => changeSlide(-1));
-    document.querySelector(".next")?.addEventListener("click", () => changeSlide(1));
+        // Get form data
+        const petType = document.querySelector("#pet-type").value;
+        const age = document.querySelector("#age").value;
+        const size = document.querySelector("#size").value;
+        const location = document.querySelector("#location").value;
 
-    showSlide(slideIndex);
+        console.log(`Searching for a ${size} ${petType}, Age: ${age}, Location: ${location}`);
+
+        // Hide the form after submission
+        filterForm.style.display = "none";
+    });
 });
+
+
 
 // Handle Favorite Pets
 function addFavoriteEventListeners() {
