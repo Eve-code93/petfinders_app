@@ -1,9 +1,10 @@
-let accessToken = null; // Global variable for API access token
+// Global API Token
+let accessToken = null;
 
 const CLIENT_ID = "FxSBHzyN9KCHSxR2LcNhWaBXuZzzBKlAVQSZDsvOwBfrGJj0GW";
 const CLIENT_SECRET = "VhPICrlPsoJ24gJ1DBB5Qu5Twh34MIOx7SWeFwKK";
 
-// Function to get a new access token
+// Get Access Token
 async function getAccessToken() {
     const url = "https://api.petfinder.com/v2/oauth2/token";
     const params = new URLSearchParams({
@@ -24,7 +25,6 @@ async function getAccessToken() {
         const data = await response.json();
         accessToken = data.access_token;
 
-        // Store token in localStorage with expiry timestamp
         localStorage.setItem("petfinder_token", accessToken);
         localStorage.setItem("token_expiry", Date.now() + data.expires_in * 1000);
 
@@ -35,7 +35,7 @@ async function getAccessToken() {
     }
 }
 
-// Function to get a valid access token (checks if expired)
+// Get valid token (checks expiry)
 async function getValidToken() {
     const storedToken = localStorage.getItem("petfinder_token");
     const tokenExpiry = localStorage.getItem("token_expiry");
@@ -45,16 +45,11 @@ async function getValidToken() {
         return accessToken;
     }
 
-    console.log("🔄 Token expired or missing, refreshing...");
+    console.log("🔄 Token expired, refreshing...");
     return await getAccessToken();
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-    await getValidToken();
-    fetchPets();
-});
-
-// Fetch pets from API with optional filters
+// Fetch pets with filters
 async function fetchPets(type = "", age = "", size = "", page = 1) {
     try {
         const token = await getValidToken();
@@ -75,13 +70,14 @@ async function fetchPets(type = "", age = "", size = "", page = 1) {
         const data = await response.json();
         if (!data || !data.animals) throw new Error("Invalid API response");
 
+        console.log("API Response:", data.animals);
         categorizePets(data.animals);
     } catch (error) {
         console.error("❌ Error fetching pets:", error);
     }
 }
 
-// Categorize pets by type
+// Categorize pets
 function categorizePets(pets) {
     if (!Array.isArray(pets)) {
         console.error("❌ Error: pets is not an array.");
@@ -90,7 +86,7 @@ function categorizePets(pets) {
 
     const dogs = [];
     const cats = [];
-    const otherPets = [];
+    const otherpets = [];
     const newArrivals = [];
 
     const now = new Date();
@@ -99,79 +95,122 @@ function categorizePets(pets) {
         if (daysListed <= 7) newArrivals.push(pet);
         if (pet.type.toLowerCase() === "dog") dogs.push(pet);
         else if (pet.type.toLowerCase() === "cat") cats.push(pet);
-        else otherPets.push(pet);
+        else otherpets.push(pet);
     });
 
-    displayPets("latest-pets-list", newArrivals);
+    updatePetsDisplay(dogs, cats, otherpets, newArrivals);
+}
+
+// Display pets
+function updatePetsDisplay(dogs, cats, otherpets, newArrivals) {
     displayPets("dogs-list", dogs);
     displayPets("cats-list", cats);
+    displayPets("otherpets-list", otherpets);
+    displayPets("latest-pets-list", newArrivals);
 }
 
+let currentIndex = 0;
+let petsWithPictures = [];
 
-function displayPets(containerId, pets) {
+function displayPets(containerId, pets, itemsToShow = 5) {
     const container = document.getElementById(containerId);
     if (!container) {
-        console.error(`❌ Error: Container with ID '${containerId}' not found.`);
+        console.error(`❌ Error: Container '${containerId}' not found.`);
         return;
     }
 
-    container.innerHTML = "";
-    if (pets.length === 0) {
-        container.innerHTML = "<p>No pets found.</p>";
+    // Debug: Check the API response
+    console.log("Pets from API:", pets);
+
+    // Filter pets that have photos, but allow fallback if none have photos
+    petsWithPictures = pets.filter(pet => pet.photos && pet.photos.length > 0);
+
+    // Debug: Check how many pets have images
+    console.log("Filtered Pets with Images:", petsWithPictures.length);
+
+    if (petsWithPictures.length === 0) {
+        container.innerHTML = "<p>No pets with pictures available.</p>";
         return;
     }
 
-    pets.forEach(pet => {
-        const petCard = document.createElement("div");
-        petCard.classList.add("pet-card");
+    function updateDisplay() {
+        const petsToDisplay = [];
+        for (let i = 0; i < itemsToShow; i++) {
+            petsToDisplay.push(petsWithPictures[(currentIndex + i) % petsWithPictures.length]);
+        }
 
-        const imageUrl = pet.photos.length > 0 ? pet.photos[0].medium : "default-image.jpg";
-        petCard.innerHTML = `
-            <img src="${imageUrl}" alt="${pet.name}" onerror="this.src='default-image.jpg'">
-            <h3>${pet.name}</h3>
-            <p>${pet.breeds.primary || "Unknown Breed"}</p>
-            <button class="favorite-btn" data-id="${pet.id}">❤️ Favorite</button>
-        `;
+        const fragment = document.createDocumentFragment();
+        
+        petsToDisplay.forEach((pet) => {
+            const petCard = document.createElement("div");
+            petCard.classList.add("pet-card");
 
-        container.appendChild(petCard);
-    });
+            // Debug: Check each pet's photos array
+            console.log(`Pet: ${pet.name}, Photos:`, pet.photos);
 
-    addFavoriteEventListeners();
+            // Use first available image or a placeholder
+            const imageUrl = (pet.photos.length > 0 && pet.photos[0].medium) 
+                ? pet.photos[0].medium 
+                : "placeholder.jpg";
+            const age = pet.age || "Unknown Age";
+
+            petCard.innerHTML = `
+                <img src="${imageUrl}" alt="${pet.name}" onerror="this.src='placeholder.jpg';">
+                <h3>${pet.name}</h3>
+                <p><strong>Breed:</strong> ${pet.breeds.primary || "Unknown Breed"}</p>
+                <p><strong>Age:</strong> ${age}</p>
+                <button class="favorite-btn" data-id="${pet.id}">❤️ Favorite</button>
+            `;
+
+            fragment.appendChild(petCard);
+        });
+
+        container.style.opacity = "0";
+
+        setTimeout(() => {
+            container.innerHTML = "";
+            container.appendChild(fragment);
+            container.style.opacity = "1";
+            addFavoriteEventListeners();
+        }, 500);
+
+        currentIndex = (currentIndex + itemsToShow) % petsWithPictures.length;
+    }
+
+    updateDisplay();
+    setInterval(updateDisplay, 5000);
 }
 
 
-document.getElementById("pet-filter-form")?.addEventListener("submit", function (event) {
-    event.preventDefault(); 
+// Image slider functionality (Fixed Flashing Issue)
+document.addEventListener("DOMContentLoaded", function () {
+    let slideIndex = 0;
+    const slides = document.querySelectorAll(".slide");
 
-    const type = document.getElementById("type").value;
-    const age = document.getElementById("age").value;
-    const size = document.getElementById("size").value;
-
-    console.log("🔍 Filtering pets with:", { type, age, size });
-    fetchPets(type, age, size);
-});
-
-// Handle pagination
-let currentPage = 1;
-
-document.getElementById("next-page")?.addEventListener("click", function () {
-    currentPage++;
-    fetchPets("", "", "", currentPage);
-});
-
-document.getElementById("prev-page")?.addEventListener("click", function () {
-    if (currentPage > 1) {
-        currentPage--;
-        fetchPets("", "", "", currentPage);
+    if (slides.length === 0) {
+        console.error("No slides found! Check your image paths.");
+        return;
     }
+
+    function showSlide(index) {
+        slides.forEach((slide, i) => {
+            slide.style.opacity = i === index ? "1" : "0";
+            slide.style.transition = "opacity 0.5s ease-in-out";
+        });
+    }
+
+    function changeSlide(direction) {
+        slideIndex = (slideIndex + direction + slides.length) % slides.length;
+        showSlide(slideIndex);
+    }
+
+    document.querySelector(".prev")?.addEventListener("click", () => changeSlide(-1));
+    document.querySelector(".next")?.addEventListener("click", () => changeSlide(1));
+
+    showSlide(slideIndex);
 });
 
-// Toggle filter form visibility
-document.getElementById("toggle-filter-button")?.addEventListener("click", function () {
-    document.getElementById("filter-form").classList.toggle("hidden");
-});
-
-// Favorite pets
+// Handle Favorite Pets
 function addFavoriteEventListeners() {
     document.querySelectorAll(".favorite-btn").forEach(button => {
         button.addEventListener("click", function () {
@@ -191,39 +230,14 @@ function saveFavoritePet(petId) {
     }
 }
 
-// Image slider functionality
-document.addEventListener("DOMContentLoaded", function () {
-    let slideIndex = 0;
-    const slides = document.querySelectorAll(".slide");
-
-    if (slides.length === 0) {
-        console.error("No slides found! Check your image paths.");
-        return;
-    }
-
-    function showSlide(index) {
-        slides.forEach((slide, i) => {
-            slide.style.display = i === index ? "block" : "none";
-        });
-    }
-
-    function changeSlide(direction) {
-        slideIndex = (slideIndex + direction + slides.length) % slides.length;
-        showSlide(slideIndex);
-    }
-
-    document.querySelector(".prev")?.addEventListener("click", () => changeSlide(-1));
-    document.querySelector(".next")?.addEventListener("click", () => changeSlide(1));
-    showSlide(slideIndex);
-});
-
+// Subscription Form Validation
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("subscription-form");
     const emailInput = document.getElementById("email");
     const message = document.getElementById("subscription-message");
 
-    form.addEventListener("submit", (event) => {
-        event.preventDefault(); 
+    form?.addEventListener("submit", (event) => {
+        event.preventDefault();
 
         const email = emailInput.value.trim();
 
@@ -233,9 +247,15 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             message.textContent = `Thank you for subscribing! A confirmation email has been sent to ${email}.`;
             message.style.color = "green";
-            emailInput.value = ""; 
+            emailInput.value = "";
         }
 
         message.classList.remove("hidden");
     });
+});
+
+// Fetch pets on page load
+document.addEventListener("DOMContentLoaded", async () => {
+    await getValidToken();
+    fetchPets();
 });
