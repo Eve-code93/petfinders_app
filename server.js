@@ -6,9 +6,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 4000; // Use the PORT environment variable from Render
 
-// Allow frontend requests from http://127.0.0.1:3004
+// Allow frontend requests (adjust origin if frontend is deployed elsewhere)
 app.use(cors({ origin: 'http://127.0.0.1:3004' }));
 
 // Store the access token globally
@@ -35,6 +35,11 @@ async function ensureAccessToken(req, res, next) {
     if (!accessToken) await getAccessToken();
     next();
 }
+
+// Root route for a basic response (to fix "Cannot GET /" issue)
+app.get('/', (req, res) => {
+    res.send('Welcome to the Pet API! Use /pets to get pet data.');
+});
 
 // Proxy route to fetch pets
 app.get('/pets', ensureAccessToken, async (req, res) => {
