@@ -1,15 +1,27 @@
 {
   "name": "petfinders_app",
   "version": "1.0.0",
-  "description": "",
+  "description": "An application to fetch and display pet data using the Petfinder API.",
   "type": "module",
-  "main": "index.js",
-  "scripts": {
-    "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
+  "main": "server.js",
+  {
+    "scripts": {
+      "dev": "nodemon server.js",
+      "build": "vite build && cp -R dist/ public/",  // Build frontend + copy files
+      "start": "node server.js",
+      "client": "cd client && npm run dev",
+      "install-client": "cd client && npm install"
+    }
+  }
+  "keywords": [
+    "petfinder",
+    "node.js",
+    "express",
+    "API",
+    "pets",
+    "dotenv"
+  ],
+  "author": "Evelyne Mbithe",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.8.4",
@@ -17,7 +29,11 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
-
-

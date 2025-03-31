@@ -1,12 +1,10 @@
+const BACKEND_URL = "https://petfinders-app.onrender.com"; //
 // Global API Token
 let accessToken = null;
 
-const CLIENT_ID = "FxSBHzyN9KCHSxR2LcNhWaBXuZzzBKlAVQSZDsvOwBfrGJj0GW";
-const CLIENT_SECRET = "VhPICrlPsoJ24gJ1DBB5Qu5Twh34MIOx7SWeFwKK";
-
 // Get Access Token
-async function getAccessToken() {
-    const url = "https://api.petfinder.com/v2/oauth2/token";
+export async function getAccessToken() {
+    const url = `${API_URL}/oauth2/token`;
     const params = new URLSearchParams({
         grant_type: "client_credentials",
         client_id: CLIENT_ID,
@@ -20,34 +18,38 @@ async function getAccessToken() {
             body: params
         });
 
-        if (!response.ok) throw new Error(`Error: ${response.status}`);
+        if (!response.ok) throw new Error(`Error fetching token: ${response.status}`);
 
         const data = await response.json();
         accessToken = data.access_token;
 
+        // Cache the token and its expiry
         localStorage.setItem("petfinder_token", accessToken);
         localStorage.setItem("token_expiry", Date.now() + data.expires_in * 1000);
 
-        console.log("✅ Access Token Retrieved:", accessToken);
+        console.log("✅ Access Token Retrieved Successfully:", accessToken);
         return accessToken;
     } catch (error) {
-        console.error("❌ Failed to get access token:", error);
+        console.error("❌ Error during token retrieval:", error);
+        throw error; // Re-throw to allow caller to handle
     }
 }
 
 // Get valid token (checks expiry)
-async function getValidToken() {
+export async function getValidToken() {
     const storedToken = localStorage.getItem("petfinder_token");
     const tokenExpiry = localStorage.getItem("token_expiry");
 
     if (storedToken && tokenExpiry && Date.now() < tokenExpiry) {
         accessToken = storedToken;
+        console.log("✅ Using cached access token");
         return accessToken;
     }
 
-    console.log("🔄 Token expired, refreshing...");
+    console.log("🔄 Token expired or not found, refreshing...");
     return await getAccessToken();
 }
+
 
 document.addEventListener("DOMContentLoaded", function () {
     const themeToggle = document.getElementById("theme-toggle");
@@ -212,7 +214,7 @@ function displayPets(containerId, pets, itemsToShow = 5) {
     }
 
     updateDisplay();
-    setInterval(updateDisplay, 5000);
+    setInterval(updateDisplay, 10000);
 }
 
 
