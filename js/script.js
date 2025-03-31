@@ -1,14 +1,15 @@
-const BACKEND_URL = "https://petfinders-app.onrender.com"; //
+const BACKEND_URL = "https://petfinders-app.onrender.com"; 
+
 // Global API Token
 let accessToken = null;
 
 // Get Access Token
 export async function getAccessToken() {
-    const url = `${API_URL}/oauth2/token`;
+    const url = `${BACKEND_URL}/oauth2/token`; // Ensure the correct backend URL is used
     const params = new URLSearchParams({
         grant_type: "client_credentials",
-        client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET
+        client_id: CLIENT_ID,  // Replace with your valid client ID
+        client_secret: CLIENT_SECRET // Replace with your valid client secret
     });
 
     try {
@@ -23,7 +24,7 @@ export async function getAccessToken() {
         const data = await response.json();
         accessToken = data.access_token;
 
-        // Cache the token and its expiry
+        // Cache the token and its expiry in localStorage
         localStorage.setItem("petfinder_token", accessToken);
         localStorage.setItem("token_expiry", Date.now() + data.expires_in * 1000);
 
@@ -31,7 +32,7 @@ export async function getAccessToken() {
         return accessToken;
     } catch (error) {
         console.error("❌ Error during token retrieval:", error);
-        throw error; // Re-throw to allow caller to handle
+        throw error; // Re-throw to allow the caller to handle the error properly
     }
 }
 
@@ -40,6 +41,7 @@ export async function getValidToken() {
     const storedToken = localStorage.getItem("petfinder_token");
     const tokenExpiry = localStorage.getItem("token_expiry");
 
+    // Check if the cached token is still valid
     if (storedToken && tokenExpiry && Date.now() < tokenExpiry) {
         accessToken = storedToken;
         console.log("✅ Using cached access token");
@@ -49,6 +51,7 @@ export async function getValidToken() {
     console.log("🔄 Token expired or not found, refreshing...");
     return await getAccessToken();
 }
+
 
 
 document.addEventListener("DOMContentLoaded", function () {
