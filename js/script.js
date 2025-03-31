@@ -1,60 +1,28 @@
-const BACKEND_URL = "https://petfinders-app.onrender.com"; 
+// =============================================
+// API Configuration (REPLACE WITH YOUR CREDENTIALS)
+// =============================================
+const PETFINDER_CONFIG = {
+    CLIENT_ID: "FxSBHzyN9KCHSxR2LcNhWaBXuZzzBKlAVQSZDsvOwBfrGJj0GW",
+    CLIENT_SECRET: "VhPICrlPsoJ24gJ1DBB5Qu5Twh34MIOx7SWeFwKK",
+    API_URL: "https://api.petfinder.com/v2"
+  };
+  
+  // =============================================
+  // Global Variables
+  // =============================================
+  let accessToken = null;
+  let currentDisplayIndex = 0;
+  let allPets = [];
+  let favoritePets = JSON.parse(localStorage.getItem('favoritePets')) || [];
+  let rotationInterval = null;
+  const PETS_PER_ROW = 5;
+  const ROTATION_INTERVAL = 7000; // 7 seconds
+  
+  // =============================================
+  // Authentication Management
+  // =============================================
 
-// Global API Token
-let accessToken = null;
-
-// Get Access Token
-export async function getAccessToken() {
-    const url = `${BACKEND_URL}/oauth2/token`; // Ensure the correct backend URL is used
-    const params = new URLSearchParams({
-        grant_type: "client_credentials",
-        client_id: CLIENT_ID,  // Replace with your valid client ID
-        client_secret: CLIENT_SECRET // Replace with your valid client secret
-    });
-
-    try {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: params
-        });
-
-        if (!response.ok) throw new Error(`Error fetching token: ${response.status}`);
-
-        const data = await response.json();
-        accessToken = data.access_token;
-
-        // Cache the token and its expiry in localStorage
-        localStorage.setItem("petfinder_token", accessToken);
-        localStorage.setItem("token_expiry", Date.now() + data.expires_in * 1000);
-
-        console.log("✅ Access Token Retrieved Successfully:", accessToken);
-        return accessToken;
-    } catch (error) {
-        console.error("❌ Error during token retrieval:", error);
-        throw error; // Re-throw to allow the caller to handle the error properly
-    }
-}
-
-// Get valid token (checks expiry)
-export async function getValidToken() {
-    const storedToken = localStorage.getItem("petfinder_token");
-    const tokenExpiry = localStorage.getItem("token_expiry");
-
-    // Check if the cached token is still valid
-    if (storedToken && tokenExpiry && Date.now() < tokenExpiry) {
-        accessToken = storedToken;
-        console.log("✅ Using cached access token");
-        return accessToken;
-    }
-
-    console.log("🔄 Token expired or not found, refreshing...");
-    return await getAccessToken();
-}
-
-
-
-document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", function () {
     const themeToggle = document.getElementById("theme-toggle");
     const themeIcon = document.getElementById("theme-icon");
     const body = document.body;
@@ -85,142 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
-
-
-
-// Fetch pets with filters
-async function fetchPets(type = "", age = "", size = "", page = 1) {
-    try {
-        const token = await getValidToken();
-        let url = `https://api.petfinder.com/v2/animals?page=${page}`;
-
-        const params = new URLSearchParams();
-        if (type) params.append("type", type);
-        if (age) params.append("age", age);
-        if (size) params.append("size", size);
-        url += `&${params.toString()}`;
-
-        const response = await fetch(url, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-
-        if (!response.ok) throw new Error(`Failed to fetch pets (Status: ${response.status})`);
-
-        const data = await response.json();
-        if (!data || !data.animals) throw new Error("Invalid API response");
-
-        console.log("API Response:", data.animals);
-        categorizePets(data.animals);
-    } catch (error) {
-        console.error("❌ Error fetching pets:", error);
-    }
-}
-
-// Categorize pets
-function categorizePets(pets) {
-    if (!Array.isArray(pets)) {
-        console.error("❌ Error: pets is not an array.");
-        return;
-    }
-
-    const dogs = [];
-    const cats = [];
-    const otherpets = [];
-    const newArrivals = [];
-
-    const now = new Date();
-    pets.forEach(pet => {
-        const daysListed = Math.floor((now - new Date(pet.published_at)) / (1000 * 60 * 60 * 24));
-        if (daysListed <= 7) newArrivals.push(pet);
-        if (pet.type.toLowerCase() === "dog") dogs.push(pet);
-        else if (pet.type.toLowerCase() === "cat") cats.push(pet);
-        else otherpets.push(pet);
-    });
-
-    updatePetsDisplay(dogs, cats, otherpets, newArrivals);
-}
-
-// Display pets
-function updatePetsDisplay(dogs, cats, otherpets, newArrivals) {
-    displayPets("dogs-list", dogs);
-    displayPets("cats-list", cats);
-    displayPets("otherpets-list", otherpets);
-    displayPets("latest-pets-list", newArrivals);
-}
-
-let currentIndex = 0;
-let petsWithPictures = [];
-
-function displayPets(containerId, pets, itemsToShow = 5) {
-    const container = document.getElementById(containerId);
-    if (!container) {
-        console.error(`❌ Error: Container '${containerId}' not found.`);
-        return;
-    }
-
-    // Debug: Check the API response
-    console.log("Pets from API:", pets);
-
-    // Filter pets that have photos, but allow fallback if none have photos
-    petsWithPictures = pets.filter(pet => pet.photos && pet.photos.length > 0);
-
-    // Debug: Check how many pets have images
-    console.log("Filtered Pets with Images:", petsWithPictures.length);
-
-    if (petsWithPictures.length === 0) {
-        container.innerHTML = "<p>No pets with pictures available.</p>";
-        return;
-    }
-
-    function updateDisplay() {
-        const petsToDisplay = [];
-        for (let i = 0; i < itemsToShow; i++) {
-            petsToDisplay.push(petsWithPictures[(currentIndex + i) % petsWithPictures.length]);
-        }
-
-        const fragment = document.createDocumentFragment();
-        
-        petsToDisplay.forEach((pet) => {
-            const petCard = document.createElement("div");
-            petCard.classList.add("pet-card");
-
-            // Debug: Check each pet's photos array
-            console.log(`Pet: ${pet.name}, Photos:`, pet.photos);
-
-            // Use first available image or a placeholder
-            const imageUrl = (pet.photos.length > 0 && pet.photos[0].medium) 
-                ? pet.photos[0].medium 
-                : "placeholder.jpg";
-            const age = pet.age || "Unknown Age";
-
-            petCard.innerHTML = `
-                <img src="${imageUrl}" alt="${pet.name}" onerror="this.src='placeholder.jpg';">
-                <h3>${pet.name}</h3>
-                <p><strong>Breed:</strong> ${pet.breeds.primary || "Unknown Breed"}</p>
-                <p><strong>Age:</strong> ${age}</p>
-                <button class="favorite-btn" data-id="${pet.id}">❤️ Favorite</button>
-            `;
-
-            fragment.appendChild(petCard);
-        });
-
-        container.style.opacity = "0";
-
-        setTimeout(() => {
-            container.innerHTML = "";
-            container.appendChild(fragment);
-            container.style.opacity = "1";
-            addFavoriteEventListeners();
-        }, 500);
-
-        currentIndex = (currentIndex + itemsToShow) % petsWithPictures.length;
-    }
-
-    updateDisplay();
-    setInterval(updateDisplay, 10000);
-}
-
-
+// ==================== FILTER FORM HANDLING ====================
 document.addEventListener("DOMContentLoaded", () => {
     const findNowBtn = document.querySelector("#find-now-btn");
     const filterForm = document.querySelector("#filter-form");
@@ -228,55 +61,243 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Open filter form
     findNowBtn.addEventListener("click", () => {
-        filterForm.style.display = "flex"; // Show the form
+        filterForm.style.display = "flex";
     });
 
     // Close filter form
     closeFilterBtn.addEventListener("click", () => {
-        filterForm.style.display = "none"; // Hide the form
+        filterForm.style.display = "none";
     });
 
     // Handle form submission
     document.querySelector("#pet-filter-form").addEventListener("submit", (event) => {
-        event.preventDefault(); // Prevent actual submission for now
-
+        event.preventDefault();
+        
         // Get form data
         const petType = document.querySelector("#pet-type").value;
         const age = document.querySelector("#age").value;
         const size = document.querySelector("#size").value;
         const location = document.querySelector("#location").value;
 
-        console.log(`Searching for a ${size} ${petType}, Age: ${age}, Location: ${location}`);
+        // Fetch pets with filters
+        fetchPets(petType, age, size, location);
 
-        // Hide the form after submission
+        // Hide the form
         filterForm.style.display = "none";
     });
 });
 
-
-
-// Handle Favorite Pets
-function addFavoriteEventListeners() {
-    document.querySelectorAll(".favorite-btn").forEach(button => {
-        button.addEventListener("click", function () {
-            const petId = this.dataset.id;
-            saveFavoritePet(petId);
-            this.textContent = "❤️ Favorited";
-            this.disabled = true;
-        });
-    });
+// ==================== NOTIFICATION SYSTEM ====================
+function showNotification(message, isSuccess = true) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${isSuccess ? 'success' : 'error'}`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('fade-out');
+        setTimeout(() => notification.remove(), 500);
+    }, 3000);
 }
 
-function saveFavoritePet(petId) {
-    let favorites = JSON.parse(localStorage.getItem("favorite_pets")) || [];
-    if (!favorites.includes(petId)) {
-        favorites.push(petId);
-        localStorage.setItem("favorite_pets", JSON.stringify(favorites));
+
+
+  async function getAccessToken() {
+    try {
+      const response = await fetch(`${PETFINDER_CONFIG.API_URL}/oauth2/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          grant_type: "client_credentials",
+          client_id: PETFINDER_CONFIG.CLIENT_ID,
+          client_secret: PETFINDER_CONFIG.CLIENT_SECRET
+        })
+      });
+  
+      if (!response.ok) throw new Error(`Authentication failed: ${response.status}`);
+      
+      const data = await response.json();
+      accessToken = data.access_token;
+      localStorage.setItem('petfinder_token', accessToken);
+      localStorage.setItem('token_expiry', Date.now() + (data.expires_in * 1000));
+      
+      return accessToken;
+    } catch (error) {
+      console.error('Error getting access token:', error);
+      throw error;
     }
-}
+  }
+  
+  async function getValidToken() {
+    const storedToken = localStorage.getItem('petfinder_token');
+    const tokenExpiry = localStorage.getItem('token_expiry');
+    return (storedToken && tokenExpiry && Date.now() < tokenExpiry) ? storedToken : await getAccessToken();
+  }
+  
+  // =============================================
+  // Pet Data Fetching (Only with Photos)
+  // =============================================
+  async function fetchPetsWithPhotos() {
+    try {
+      const pets = await fetchPets();
+      return pets.filter(pet => pet.photos && pet.photos.length > 0);
+    } catch (error) {
+      console.error('Error fetching pets with photos:', error);
+      return [];
+    }
+  }
+  
+  async function fetchPets(type = "", age = "", size = "", location = "", page = 1) {
+    try {
+      const token = await getValidToken();
+      let url = `${PETFINDER_CONFIG.API_URL}/animals?page=${page}&limit=50`;
+      
+      const params = new URLSearchParams();
+      if (type) params.append('type', type);
+      if (age) params.append('age', age);
+      if (size) params.append('size', size);
+      if (location) params.append('location', location);
+      
+      const response = await fetch(`${url}&${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (!response.ok) throw new Error(`API request failed: ${response.status}`);
+      
+      const data = await response.json();
+      return data.animals || [];
+    } catch (error) {
+      console.error('Error fetching pets:', error);
+      return [];
+    }
+  }
+  
+  // =============================================
+  // Favorites Management
+  // =============================================
+  function toggleFavorite(petId) {
+    const index = favoritePets.indexOf(petId);
+    if (index === -1) {
+      favoritePets.push(petId);
+    } else {
+      favoritePets.splice(index, 1);
+    }
+    localStorage.setItem('favoritePets', JSON.stringify(favoritePets));
+    updateFavoriteButtons();
+  }
+  
+  function isFavorite(petId) {
+    return favoritePets.includes(petId);
+  }
+  
+  function updateFavoriteButtons() {
+    document.querySelectorAll('.favorite-btn').forEach(btn => {
+      const petId = btn.dataset.petId;
+      btn.innerHTML = isFavorite(petId) ? '❤️ Favorited' : '♡ Favorite';
+      btn.classList.toggle('active', isFavorite(petId));
+    });
+  }
 
-// Subscription Form Validation
-document.addEventListener("DOMContentLoaded", () => {
+  // =============================================
+  // Display Functions (Only Animals with Photos)
+  // =============================================
+  function displayPetRows(containerId, pets) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+  
+    // Clear previous interval if exists
+    if (rotationInterval) {
+      clearInterval(rotationInterval);
+    }
+  
+    // Filter pets with photos
+    const petsWithPhotos = pets.filter(pet => pet.photos && pet.photos.length > 0);
+    
+    if (petsWithPhotos.length === 0) {
+      container.innerHTML = '<p class="no-pets">No pets with photos available.</p>';
+      return;
+    }
+  
+    // Function to display a specific set of pets
+    const showPetSubset = (startIndex) => {
+      const subset = [];
+      for (let i = 0; i < PETS_PER_ROW; i++) {
+        const index = (startIndex + i) % petsWithPhotos.length;
+        subset.push(petsWithPhotos[index]);
+      }
+      renderPets(container, subset);
+    };
+  
+    // Initial display
+    showPetSubset(currentDisplayIndex);
+  
+    // Set up rotation
+    rotationInterval = setInterval(() => {
+      currentDisplayIndex = (currentDisplayIndex + PETS_PER_ROW) % petsWithPhotos.length;
+      showPetSubset(currentDisplayIndex);
+    }, ROTATION_INTERVAL);
+  }
+  
+  function renderPets(container, pets) {
+    container.innerHTML = pets.map(pet => `
+      <div class="pet-card">
+        <div class="pet-image">
+          <img src="${pet.photos[0].medium}" 
+               alt="${pet.name || 'Pet image'}" 
+               onerror="this.src='https://via.placeholder.com/300x200?text=Image+Not+Available'">
+        </div>
+        <div class="pet-info">
+          <h3>${pet.name || 'No name'}</h3>
+          <p>${pet.breeds?.primary || 'Unknown breed'}</p>
+          <p>${pet.age || 'Age unknown'}</p>
+          <button class="favorite-btn ${isFavorite(pet.id) ? 'active' : ''}" 
+                  data-pet-id="${pet.id}">
+            ${isFavorite(pet.id) ? '❤️ Favorited' : '♡ Favorite'}
+          </button>
+        </div>
+      </div>
+    `).join('');
+  
+    // Add event listeners to new buttons
+    document.querySelectorAll('.favorite-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        toggleFavorite(btn.dataset.petId);
+      });
+    });
+  }
+  
+  // =============================================
+  // Initialization
+  // =============================================
+  async function initializeApp() {
+    try {
+      // Load pets with photos only
+      allPets = await fetchPetsWithPhotos();
+      
+      // Categorize pets
+      const now = new Date();
+      const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      
+      const dogs = allPets.filter(pet => pet.type?.toLowerCase() === 'dog');
+      const cats = allPets.filter(pet => pet.type?.toLowerCase() === 'cat');
+      const others = allPets.filter(pet => !['dog', 'cat'].includes(pet.type?.toLowerCase()));
+      const newArrivals = allPets.filter(pet => new Date(pet.published_at) > oneWeekAgo);
+  
+      // Display with rotation
+      displayPetRows('dogs-list', dogs);
+      displayPetRows('cats-list', cats);
+      displayPetRows('others-list', others);
+      displayPetRows('latest-pets-list', newArrivals);
+  
+    } catch (error) {
+      console.error('Initialization error:', error);
+      document.querySelectorAll('.pet-list').forEach(el => {
+        el.innerHTML = '<p class="error">Failed to load pets. Please try again later.</p>';
+      });
+    }
+  }
+  
+  document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("subscription-form");
     const emailInput = document.getElementById("email");
     const message = document.getElementById("subscription-message");
@@ -298,9 +319,5 @@ document.addEventListener("DOMContentLoaded", () => {
         message.classList.remove("hidden");
     });
 });
-
-// Fetch pets on page load
-document.addEventListener("DOMContentLoaded", async () => {
-    await getValidToken();
-    fetchPets();
-});
+  // Start the application
+  document.addEventListener('DOMContentLoaded', initializeApp);
