@@ -1,15 +1,16 @@
-// =============================================
-// API Configuration (REPLACE WITH YOUR CREDENTIALS)
-// =============================================
+
+// API Configuration 
+
 const PETFINDER_CONFIG = {
     CLIENT_ID: "FxSBHzyN9KCHSxR2LcNhWaBXuZzzBKlAVQSZDsvOwBfrGJj0GW",
     CLIENT_SECRET: "VhPICrlPsoJ24gJ1DBB5Qu5Twh34MIOx7SWeFwKK",
     API_URL: "https://api.petfinder.com/v2"
   };
   
-  // =============================================
+
   // Global Variables
-  // =============================================
+
+
   let accessToken = null;
   let currentDisplayIndex = 0;
   let allPets = [];
@@ -18,9 +19,8 @@ const PETFINDER_CONFIG = {
   const PETS_PER_ROW = 5;
   const ROTATION_INTERVAL = 7000; // 7 seconds
   
-  // =============================================
   // Authentication Management
-  // =============================================
+  
 
   document.addEventListener("DOMContentLoaded", function () {
     const themeToggle = document.getElementById("theme-toggle");
@@ -53,7 +53,7 @@ const PETFINDER_CONFIG = {
         }
     });
 });
-// ==================== FILTER FORM HANDLING ====================
+//  FILTER FORM HANDLING 
 document.addEventListener("DOMContentLoaded", () => {
     const findNowBtn = document.querySelector("#find-now-btn");
     const filterForm = document.querySelector("#filter-form");
@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// ==================== NOTIFICATION SYSTEM ====================
+ //NOTIFICATION SYSTEM
 function showNotification(message, isSuccess = true) {
     const notification = document.createElement('div');
     notification.className = `notification ${isSuccess ? 'success' : 'error'}`;
@@ -134,9 +134,9 @@ function showNotification(message, isSuccess = true) {
     return (storedToken && tokenExpiry && Date.now() < tokenExpiry) ? storedToken : await getAccessToken();
   }
   
-  // =============================================
+  
   // Pet Data Fetching (Only with Photos)
-  // =============================================
+
   async function fetchPetsWithPhotos() {
     try {
       const pets = await fetchPets();
@@ -172,9 +172,9 @@ function showNotification(message, isSuccess = true) {
     }
   }
   
-  // =============================================
+
   // Favorites Management
-  // =============================================
+ 
   function toggleFavorite(petId) {
     const index = favoritePets.indexOf(petId);
     if (index === -1) {
@@ -198,9 +198,9 @@ function showNotification(message, isSuccess = true) {
     });
   }
 
-  // =============================================
+  
   // Display Functions (Only Animals with Photos)
-  // =============================================
+ 
   function displayPetRows(containerId, pets) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -266,9 +266,9 @@ function showNotification(message, isSuccess = true) {
     });
   }
   
-  // =============================================
+ 
   // Initialization
-  // =============================================
+ 
   async function initializeApp() {
     try {
       // Load pets with photos only
